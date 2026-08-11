@@ -61,6 +61,7 @@ type Config struct {
 	WellKnownTypes  bool
 	AllowEmpty      bool
 	BuildTag        string
+	Registry        bool
 }
 
 type CodegenMode string
@@ -148,6 +149,10 @@ func (gen *Generator) Generate() {
 
 		// Generate vtproto features
 		gen.generateFile(p, file)
+
+		if gen.cfg.Registry {
+			gen.generateRegistry(p, file)
+		}
 	}
 }
 
