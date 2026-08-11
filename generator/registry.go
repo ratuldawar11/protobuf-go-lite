@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"slices"
 	"sort"
 	"strconv"
 
@@ -67,26 +68,15 @@ func (gen *Generator) generateRegistry(p *GeneratedFile, file *protogen.File) {
 }
 
 func ValidateRegistryFeatures(featureNames []string) error {
-	hasSize := false
-	hasMarshal := false
-	hasUnmarshal := false
-	for _, name := range featureNames {
-		if name == "all" {
-			return nil
-		}
-		switch name {
-		case "size":
-			hasSize = true
-		case "marshal":
-			hasMarshal = true
-		case "unmarshal":
-			hasUnmarshal = true
-		}
-	}
-	if hasSize && hasMarshal && hasUnmarshal {
+	if slices.Contains(featureNames, "all") {
 		return nil
 	}
-	return errRegistryFeatures
+	for _, req := range []string{"size", "marshal", "unmarshal"} {
+		if !slices.Contains(featureNames, req) {
+			return errRegistryFeatures
+		}
+	}
+	return nil
 }
 
 var errRegistryFeatures = errString("registry=true requires size, marshal, and unmarshal features")
